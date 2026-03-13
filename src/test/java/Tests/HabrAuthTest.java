@@ -21,3 +21,5 @@ public class HabrAuthTest extends BaseTest {
                 "Сообщение о неверных данных. Текст ошибки: " + errorText);
     }
 }
+
+
