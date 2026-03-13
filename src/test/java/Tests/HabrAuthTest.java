@@ -17,6 +17,8 @@ public class HabrAuthTest extends BaseTest {
 
         String errorText = loginPage.getErrorText();
 
+
+
         Assertions.assertTrue(errorText.contains("Неверный"),
                 "Сообщение о неверных данных. Текст ошибки: " + errorText);
     }
