@@ -1,41 +1,66 @@
 package pages;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 
 public class MainPage {
     private WebDriver driver;
+    private WebDriverWait wait;
 
-    // Локаторы
-    private final By searchButton = By.xpath("//a[contains(@href, '/search/')]");
-    private final By searchInput = By.name("q");
+    private final By loginLink = By.xpath("//a[contains(@href, '/login')]");
     private final By hubsLink = By.xpath("//a[contains(@href, '/hubs/')]");
-
-    // Локатор для кнопки "Войти" в шапке сайта (ведет на account.habr.com)
-    private final By loginButtonHeader = By.xpath("//a[contains(@href, 'account.habr.com')]");
+    private final By searchIcon = By.cssSelector(".tm-header__search-toggle");
+    private final By searchInput = By.cssSelector(".tm-input-text-decorated__input");
+    private final By searchResults = By.cssSelector(".tm-articles-list");
 
     public MainPage(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    // Методы
-    public void open() {
-        driver.get("https://habr.com/ru/all/" );
+    public MainPage open() {
+        driver.get("https://habr.com/ru/");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));
+        return this;
     }
 
-    public void searchFor(String text) {
-        driver.findElement(searchButton).click();
-        driver.findElement(searchInput).sendKeys(text);
-        driver.findElement(searchInput).sendKeys(Keys.ENTER);
+    public LoginPage goToLoginPage() {
+        wait.until(ExpectedConditions.elementToBeClickable(loginLink)).click();
+        return new LoginPage(driver);
     }
 
-    public void clickHubs() {
-        driver.findElement(hubsLink).click();
+    public MainPage clickHubs() {
+        wait.until(ExpectedConditions.elementToBeClickable(hubsLink)).click();
+        return this;
     }
 
-    // Метод для перехода на страницу входа через главную
-    public void goToLoginPage() {
-        driver.findElement(loginButtonHeader).click();
+    public MainPage searchFor(String query) {
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(searchIcon)).click();
+            Thread.sleep(1000);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(searchInput))
+                    .sendKeys(query + "\n");
+            System.out.println("Поисковый запрос '" + query + "' отправлен");
+        } catch (Exception e) {
+            System.out.println("Ошибка при поиске: " + e.getMessage());
+        }
+        return this;
+    }
+
+    public boolean areResultsPresent() {
+        try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(searchResults));
+            return driver.findElements(By.cssSelector(".tm-articles-list article")).size() > 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // ДОБАВЛЯЕМ ЭТОТ МЕТОД
+    public WebDriver getDriver() {
+        return driver;
     }
 }

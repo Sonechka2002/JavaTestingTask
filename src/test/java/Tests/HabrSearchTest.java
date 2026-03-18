@@ -1,24 +1,27 @@
 package Tests;
 
 import core.BaseTest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import pages.MainPage;
-import org.openqa.selenium.By;
+import steps.MainPageSteps;
 
 public class HabrSearchTest extends BaseTest {
 
     @Test
-    void testSearchOnHabr() {
+    public void testSearchOnHabr() {
+        MainPageSteps steps = new MainPageSteps(new MainPage(driver));
 
-        MainPage mainPage = new MainPage(driver);
+        steps.openMainPage()
+                .searchFor("Selenium")
+                .verifySearchResults();
+    }
 
-        mainPage.open();
+    @Test
+    public void testSearchWithDifferentQuery() {
+        MainPageSteps steps = new MainPageSteps(new MainPage(driver));
 
-        mainPage.searchFor("Selenium");
-
-        boolean isResultsPresent = driver.findElements(By.cssSelector("article")).size() > 0;
-
-        Assertions.assertTrue(isResultsPresent, "Результаты поиска на странице");
+        steps.openMainPage()
+                .searchFor("Java")
+                .verifySearchResults();
     }
 }
