@@ -8,7 +8,7 @@ import steps.MainPageSteps;
 public class HabrSearchTest extends BaseTest {
 
     @Test
-    public void testSearchOnHabr() {
+    public void testSearchWithSelenium() {
         MainPageSteps steps = new MainPageSteps(new MainPage(driver));
 
         steps.openMainPage()
@@ -17,7 +17,7 @@ public class HabrSearchTest extends BaseTest {
     }
 
     @Test
-    public void testSearchWithDifferentQuery() {
+    public void testSearchWithJava() {
         MainPageSteps steps = new MainPageSteps(new MainPage(driver));
 
         steps.openMainPage()
