@@ -1,7 +1,7 @@
-package steps;
+package ui.steps;
 
-import pages.LoginPage;
-import pages.MainPage;
+import ui.pages.LoginPage;
+import ui.pages.MainPage;
 import org.junit.jupiter.api.Assertions;
 
 public class AuthSteps {

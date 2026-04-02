@@ -1,10 +1,10 @@
 package ui.Tests;
 
-import core.BaseTest;
+import ui.core.BaseTest;
 import org.junit.jupiter.api.Test;
-import pages.LoginPage;
-import pages.MainPage;
-import steps.AuthSteps;
+import ui.pages.LoginPage;
+import ui.pages.MainPage;
+import ui.steps.AuthSteps;
 
 public class HabrAuthTest extends BaseTest {
 

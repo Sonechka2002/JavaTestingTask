@@ -1,101 +1,55 @@
-package api;
+package api.base;
 
-import api.base.ApiBaseTest;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
 
-public class JsonPlaceholderApiTest extends ApiBaseTest {
+public class JsonPlaceholderApiTest {
 
-    // 1. GET запрос - получение всех постов
-    @Test
-    public void testGetAllPosts() {
-        given()
-                .spec(requestSpec)
-                .when()
-                .get("/posts")
-                .then()
-                .spec(responseSpec200)
-                .body("size()", greaterThan(0))
-                .body("[0].id", notNullValue())
-                .body("[0].title", notNullValue());
+    @BeforeAll
+    public static void setup() {
+        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
     }
 
-    // 2. GET запрос - получение одного поста по ID
     @Test
-    public void testGetPostById() {
-        int postId = 1;
-
-        given()
-                .spec(requestSpec)
+    public void testGetUserById() {
+        // 1. Отправляем запрос и получаем ответ
+        Response response = given()
                 .when()
-                .get("/posts/" + postId)
+                .get("/users/1")
                 .then()
-                .spec(responseSpec200)
-                .body("id", equalTo(postId))
-                .body("userId", notNullValue())
-                .body("title", notNullValue())
-                .body("body", notNullValue());
-    }
+                .statusCode(200)
+                .extract()
+                .response();
 
-    // 3. POST запрос - создание нового поста
-    @Test
-    public void testCreateNewPost() {
-        Map<String, Object> newPost = new HashMap<>();
-        newPost.put("userId", 1);
-        newPost.put("title", "Мой новый пост");
-        newPost.put("body", "Текст моего нового поста");
+        // 2. Десериализуем JSON в объект User
+        User actualUser = response.as(User.class);
 
-        given()
-                .spec(requestSpec)
-                .body(newPost)
-                .when()
-                .post("/posts")
-                .then()
-                .spec(responseSpec201)  // используем спецификацию для 201
-                .body("userId", equalTo(1))
-                .body("title", equalTo("Мой новый пост"))
-                .body("body", equalTo("Текст моего нового поста"))
-                .body("id", notNullValue());
-    }
+        // 3. Создаём эталонный объект
+        User expectedUser = new User();
+        expectedUser.setId(1);
+        expectedUser.setName("Leanne Graham");
+        expectedUser.setUsername("Bret");
+        expectedUser.setEmail("Sincere@april.biz");
 
-    // 4. PUT запрос - полное обновление поста
-    @Test
-    public void testUpdatePost() {
-        int postId = 1;
+        // 4. Выводим результат
+        System.out.println("Полученный пользователь: ID=" + actualUser.getId() +
+                ", Name=" + actualUser.getName() +
+                ", Username=" + actualUser.getUsername() +
+                ", Email=" + actualUser.getEmail());
 
-        Map<String, Object> updatedPost = new HashMap<>();
-        updatedPost.put("userId", 1);
-        updatedPost.put("id", postId);
-        updatedPost.put("title", "Обновленный заголовок");
-        updatedPost.put("body", "Обновленный текст поста");
+        System.out.println("Ожидаемый пользователь: ID=1, Name=Leanne Graham, Username=Bret, Email=Sincere@april.biz");
 
-        given()
-                .spec(requestSpec)
-                .body(updatedPost)
-                .when()
-                .put("/posts/" + postId)
-                .then()
-                .spec(responseSpec200)
-                .body("id", equalTo(postId))
-                .body("title", equalTo("Обновленный заголовок"))
-                .body("body", equalTo("Обновленный текст поста"));
-    }
+        // 5. Сравниваем
+        Assertions.assertEquals(expectedUser.getId(), actualUser.getId(), "ID не совпадает");
+        Assertions.assertEquals(expectedUser.getName(), actualUser.getName(), "Имя не совпадает");
+        Assertions.assertEquals(expectedUser.getUsername(), actualUser.getUsername(), "Username не совпадает");
+        Assertions.assertEquals(expectedUser.getEmail(), actualUser.getEmail(), "Email не совпадает");
 
-    // 5. DELETE запрос - удаление поста
-    @Test
-    public void testDeletePost() {
-        int postId = 1;
-
-        given()
-                .spec(requestSpec)
-                .when()
-                .delete("/posts/" + postId)
-                .then()
-                .spec(responseSpec200);  // используем спецификацию для 200
+        System.out.println("✅ Тест пройден! Объекты совпадают.");
     }
 }

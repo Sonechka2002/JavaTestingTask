@@ -1,9 +1,9 @@
 package ui.Tests;
 
-import core.BaseTest;
+import ui.core.BaseTest;
 import org.junit.jupiter.api.Test;
-import pages.MainPage;
-import steps.MainPageSteps;
+import ui.pages.MainPage;
+import ui.steps.MainPageSteps;
 
 public class HabrSearchTest extends BaseTest {
 
